@@ -1,6 +1,10 @@
 |00 @System     &vector $2 &wst    $1 &rst    $1 &eaddr  $2 &ecode  $1 &pad    $1 &r    $2 &g    $2 &b    $2 &debug $1 &halt $1
 |20 @Screen     &vector $2 &width  $2 &height $2 &auto   $1 &pad    $1 &x      $2 &y    $2 &addr $2 &pixel $1 &sprite $1
 
+( Variables in zero-page )
+|0000
+@angle $2
+
 ( Constants )
 %CENTER { #0080 }
 %RADIUS { #0020 }
@@ -12,25 +16,32 @@
     #0fc5 .System/g DEO2 
     #0f25 .System/b DEO2
 
+    #0000 .angle STZ2    ( initialize angle to 0 )
+
     ( set screen vector )
     ;on-frame .Screen/vector DEO2
 BRK
 
 @on-frame ( -> )
-    ( x = center + radius * (frame/128) )
-    #00      ( our angle for this frame )
-    DUP #80 SUB     ( center the range around 0 )
+    ( load current angle )
+    .angle LDZ2
+    
+    ( x = center + radius * (angle/128) )
+    DUP2 #0080 SUB2     ( center the range around 0 )
     RADIUS MUL2
-    #80 DIV2        ( scale to reasonable range )
+    #0080 DIV2         ( scale to reasonable range )
     CENTER ADD2 .Screen/x DEO2
         
-    ( y = center + radius * ((frame+64)/128) )
-    #40 ADD2   ( phase shift for sine )
-    #80 SUB2      ( center around 0 )
+    ( y = center + radius * ((angle+64)/128) )
+    .angle LDZ2 #0040 ADD2   ( phase shift for sine )
+    #0080 SUB2      ( center around 0 )
     RADIUS MUL2
-    #80 DIV2     ( scale to reasonable range )
+    #0080 DIV2     ( scale to reasonable range )
     CENTER ADD2 .Screen/y DEO2
         
     ( draw pixel )
-    #41 .Screen/pixel DEO
+    #01 .Screen/pixel DEO
+
+    ( increment angle for next frame )
+    .angle LDZ2 INC2 .angle STZ2
 BRK
