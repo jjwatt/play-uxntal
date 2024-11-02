@@ -13,9 +13,6 @@
 @color [ &byte $1 ]
 @angle $2
 @circle [ &xc $2 &yc $2 &x $2 &y $2 &radius $2 &d $2 ]
-	
-( %CENTER { #0080 } )
-( %RADIUS { #0020 } )
 
 ( program )
 |0100 ( -> )
@@ -24,21 +21,26 @@
     #0fc5 .System/g DEO2 
     #0f25 .System/b DEO2
 
-    #0000 .angle STZ2    ( initialize angle to 0 )
-
+     ( circle )
     .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
     .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
 	WIDTH #02 SFT2 ( radius width / 4 )
 	#02 ( color )
-	;draw-circle JSR2
- 
-BRK
+        ;draw-circle JSR2
+
+     ( circle in a circle. donut. )
+    .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
+    .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
+	WIDTH #04 SFT2 ( radius width / 8 )
+	#02 ( color )
+        ;draw-circle JSR2
+BRK	
 
 @draw-circle ( xc yc r color -- )
-	( load)
+	( store arguments in vars )
 	.color STZ .circle/radius STZ2 .circle/yc STZ2 .circle/xc STZ2
-	#0000 .circle/x STZ2 .circle/radius LDZ2 .circle/y STZ2
-	.circle/radius LDZ2 #10 SFT2 .circle/d STZ2 ( diameter is radius * 2 )
+	#0000 .circle/x STZ2 .circle/radius LDZ2 .circle/y STZ2 ( set x to 0 and y to radius )
+	.circle/radius LDZ2 #10 SFT2 .circle/d STZ2 ( d is radius * 2 but I don't think it's diameter )
 
 	( draw )
 	;&seg JSR2
@@ -51,10 +53,10 @@ BRK
 		.circle/d LDZ2 ADD2 .circle/d STZ2 ( add previous result to .circle/d )
 		;&end JMP2
 		&else
-			.circle/x LDZ2 #20 SFT2 .circle/d LDZ2 ADD2 .circle/d STZ2 ( shift x and add to diameter )
+			.circle/x LDZ2 #20 SFT2 .circle/d LDZ2 ADD2 .circle/d STZ2 ( shift x and add to d )
 		&end
 		;&seg JSR2 ( draw )
-		.circle/y LDZ2 .circle/x LDZ2 #0001 SUB2 GTS2 ,&loop JCN  ( y > x - 1, if that is > loop )
+		.circle/y LDZ2 .circle/x LDZ2 #0001 SUB2 GTS2 ,&loop JCN  ( y > x - 1, if > loop )
 	JMP2r
 	&seg
 		.circle/xc LDZ2 .circle/x LDZ2 ADD2  ( x center + x )
