@@ -10,6 +10,7 @@
 %HALF2 { #01 SFT2 } ( short -- short/2 )
 %MOD { DUP2 DIV MUL SUB } ( a b -- a%b )
 %MOD2 { OVR2 OVR2 DIV2 MUL2 SUB2 } ( a b -- a%b )
+%DEC2 { #0001 SUB2 }
 %color-clear { #40 } ( clear 1bpp sprite from fg )
 %color-2 { #4a } ( draw 1bpp sprite w/ color 2 and transparency )
 ( zero page )
@@ -46,7 +47,7 @@ BRK
 	,&draw JMP
 	&left
 		( decrement sprite/pos-x )
-		.sprite/pos-x LDZ2 #0001 SUB2
+		.sprite/pos-x LDZ2 DEC2
 		.Screen/width DEI2 MOD2
 		.sprite/pos-x STZ2
 		,&draw JMP

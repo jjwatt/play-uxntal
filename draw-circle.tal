@@ -1,0 +1,41 @@
+|00 @System [ &vector $2 &wst $1 &rst $1 &eaddr $2 &ecode $1 &pad $1 &r  $2 &g $2 &b $2 &debug $1 &halt $1 ]
+|20 [ @Screen [ &vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
+
+( Constants )
+%CENTER { #0080 }
+%RADIUS { #0040 }
+
+( program )
+|0100 ( -> )
+    ( theme ) 
+    #2ce9 .System/r DEO2 
+    #01c0 .System/g DEO2 
+    #2ce5 .System/b DEO2
+
+    ( set screen vector )
+    ;on-frame .Screen/vector DEO2
+BRK
+
+@on-frame ( -> )
+    ( start at center )
+    CENTER .Screen/x DEO2
+    CENTER .Screen/y DEO2
+
+    #00     ( angle )
+    &loop
+        DUP
+        
+        ( x = center + radius * cos(angle) )
+        DUP #00 SFT2 RADIUS MUL2
+        CENTER ADD2 .Screen/x DEO2
+        
+        ( y = center + radius * sin(angle) )
+        DUP #40 ADD #00 SFT2 RADIUS MUL2
+        CENTER ADD2 .Screen/y DEO2
+        
+        ( draw pixel )
+        #01 .Screen/pixel DEO
+        
+        INC DUP ,&loop JCN
+    POP
+BRK
