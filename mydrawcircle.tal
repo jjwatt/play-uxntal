@@ -1,0 +1,117 @@
+%ABS2 { DUP2 #0f SFT2 EQU #05 JCN #0000 SWP2 SUB2 }
+%LTS2  { #8000 ADD2 SWP2 #8000 ADD2 GTH2 }
+%GTS2  { #8000 ADD2 SWP2 #8000 ADD2 LTH2 }
+%WIDTH { #0100 } %HEIGHT { #00a0 }
+
+( devices )
+
+|00 @System [ &vector $2 &pad $6 &r $2 &g $2 &b $2 ]
+|20 @Screen [ &vector $2 &width $2 &height $2 &pad $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
+
+( Variables in zero-page )
+|0000
+@color [ &byte $1 ]
+@angle $2
+@circle [ &xc $2 &yc $2 &x $2 &y $2 &radius $2 &d $2 ]
+	
+( %CENTER { #0080 } )
+( %RADIUS { #0020 } )
+
+( program )
+|0100 ( -> )
+    ( theme ) 
+    #0fe5 .System/r DEO2 
+    #0fc5 .System/g DEO2 
+    #0f25 .System/b DEO2
+
+    #0000 .angle STZ2    ( initialize angle to 0 )
+
+    .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
+    .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
+	WIDTH #02 SFT2 ( radius width / 4 )
+	#02 ( color )
+	;draw-circle JSR2
+ 
+BRK
+
+@draw-circle ( xc yc r color -- )
+	( load)
+	.color STZ .circle/radius STZ2 .circle/yc STZ2 .circle/xc STZ2
+	#0000 .circle/x STZ2 .circle/radius LDZ2 .circle/y STZ2
+	.circle/radius LDZ2 #10 SFT2 .circle/d STZ2 ( diameter is radius * 2 )
+
+	( draw )
+	;&seg JSR2
+	&loop
+		.circle/x LDZ2 INC2 .circle/x STZ2 ( incr )
+		.circle/d LDZ2 #0001 LTS2 ,&else JCN
+
+		.circle/y LDZ2 #0001 SUB2 .circle/y STZ2 ( decr )
+		.circle/x LDZ2 .circle/y LDZ2 SUB2 #20 SFT2
+		.circle/d LDZ2 ADD2 .circle/d STZ2
+		;&end JMP2
+		&else
+			.circle/x LDZ2 #20 SFT2 .circle/d LDZ2 ADD2 .circle/d STZ2
+		&end
+		;&seg JSR2 ( draw )
+		.circle/y LDZ2 .circle/x LDZ2 #0001 SUB2 GTS2 ,&loop JCN
+	JMP2r
+	&seg
+		.circle/xc LDZ2 .circle/x LDZ2 ADD2
+		.Screen/x DEO2
+		.circle/yc LDZ2 .circle/y LDZ2 ADD2
+		.Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/y LDZ2 ADD2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/x LDZ2 ADD2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+
+		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2
+		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2
+		.color LDZ .Screen/pixel DEO
+	JMP2r
+	
+( @on-frame ( -> ) )
+(     ( load current angle ) )
+(     .angle LDZ2 )
+    
+(     ( x = center + radius * (angle/128) ) )
+(     DUP2 #0080 SUB2     ( center the range around 0 ) )
+(     RADIUS MUL2 )
+(     #0080 DIV2         ( scale to reasonable range ) )
+(     CENTER ADD2 .Screen/x DEO2 )
+        
+(     ( y = center + radius * ((angle+64)/128) ) )
+(     .angle LDZ2 #0040 ADD2   ( phase shift for sine ) )
+(     #0080 SUB2      ( center around 0 ) )
+(     RADIUS MUL2 )
+(     #0080 DIV2     ( scale to reasonable range ) )
+(     CENTER ADD2 .Screen/y DEO2 )
+        
+(     ( draw pixel ) )
+(     #01 .Screen/pixel DEO )
+
+(     ( increment angle for next frame ) )
+(     .angle LDZ2 INC2 .angle STZ2 )
+( BRK )
