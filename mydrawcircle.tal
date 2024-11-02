@@ -44,51 +44,51 @@ BRK
 	;&seg JSR2
 	&loop
 		.circle/x LDZ2 INC2 .circle/x STZ2 ( incr )
-		.circle/d LDZ2 #0001 LTS2 ,&else JCN
+		.circle/d LDZ2 #0001 LTS2 ,&else JCN  ( if .circle/d is < 1 go to else )
 
-		.circle/y LDZ2 #0001 SUB2 .circle/y STZ2 ( decr )
-		.circle/x LDZ2 .circle/y LDZ2 SUB2 #20 SFT2
-		.circle/d LDZ2 ADD2 .circle/d STZ2
+		.circle/y LDZ2 #0001 SUB2 .circle/y STZ2 ( decr y )
+		.circle/x LDZ2 .circle/y LDZ2 SUB2 #20 SFT2 ( subtract x - y then bitshift #20 )
+		.circle/d LDZ2 ADD2 .circle/d STZ2 ( add previous result to .circle/d )
 		;&end JMP2
 		&else
-			.circle/x LDZ2 #20 SFT2 .circle/d LDZ2 ADD2 .circle/d STZ2
+			.circle/x LDZ2 #20 SFT2 .circle/d LDZ2 ADD2 .circle/d STZ2 ( shift x and add to diameter )
 		&end
 		;&seg JSR2 ( draw )
-		.circle/y LDZ2 .circle/x LDZ2 #0001 SUB2 GTS2 ,&loop JCN
+		.circle/y LDZ2 .circle/x LDZ2 #0001 SUB2 GTS2 ,&loop JCN  ( y > x - 1, if that is > loop )
 	JMP2r
 	&seg
-		.circle/xc LDZ2 .circle/x LDZ2 ADD2
-		.Screen/x DEO2
-		.circle/yc LDZ2 .circle/y LDZ2 ADD2
+		.circle/xc LDZ2 .circle/x LDZ2 ADD2  ( x center + x )
+		.Screen/x DEO2  ( write out x coordinate )
+		.circle/yc LDZ2 .circle/y LDZ2 ADD2 ( y center + y )
 		.Screen/y DEO2
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/y LDZ2 ADD2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2  ( x center - x )
+		.circle/yc LDZ2 .circle/y LDZ2 ADD2 .Screen/y DEO2  ( y center + y )
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/x LDZ2 ADD2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/x LDZ2 ADD2 .Screen/x DEO2  ( x center + x )
+		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2  ( x center - x )
+		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2 ( x center + x )
+		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2 ( y center + y )
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2 ( x center - x )
+		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2 ( y center + y )
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2 ( x center + y )
+		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2 ( y center - x )
 		.color LDZ .Screen/pixel DEO
 
-		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2
-		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2
+		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2 ( x center - y )
+		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2 ( y center - x )
 		.color LDZ .Screen/pixel DEO
 	JMP2r
 	
