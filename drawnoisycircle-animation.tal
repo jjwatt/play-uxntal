@@ -39,6 +39,13 @@ BRK
 
 @on-frame ( --> )
 	.framecount LDZ INC .framecount STZ
+
+     ( circle )
+    .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
+    .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
+	WIDTH #01 SFT2 ( radius width / 2 )
+	#02 ( color )
+        ;draw-circle JSR2
      ( circle )
     .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
     .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
@@ -50,6 +57,13 @@ BRK
     .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
     .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
 	WIDTH #04 SFT2 ( radius width / 8 )
+	#02 ( color )
+        ;draw-circle JSR2
+
+     ( circle in a circle. donut. )
+    .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
+    .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
+	WIDTH #06 SFT2 ( radius width / 16 )
 	#02 ( color )
         ;draw-circle JSR2
 BRK
