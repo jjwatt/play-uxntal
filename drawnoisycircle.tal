@@ -10,6 +10,7 @@
 |00 @System [ &vector $2 &pad $6 &r $2 &g $2 &b $2 ]
 |20 @Screen [ &vector $2 &width $2 &height $2 &pad $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
 |10 @Console [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
+|c0 @DateTime [ &year   $2 &month    $1 &day    $1 &hour   $1 &minute $1 &second  $1 &dotw    $1 &doty   $2 &isdst $1 ]
 
 ( Variables in zero-page )
 |0000
@@ -41,7 +42,7 @@
 	#02 ( color )
         ;draw-circle JSR2
 
-    .numpoints LDZ2 ;pdec JSR2
+    ( .numpoints LDZ2 ;pdec JSR2 )
 
 BRK	
 
@@ -78,6 +79,11 @@ BRK
 	&seg
 		( subroutine seg draws 8 symmetric points around the circles center )
 		( mirroring the current (x, y) in all 8 directions )
+		.circle/x LDZ2
+			;prng-init JSR2
+			;prng JSR2
+			#0005 MOD2
+			ADD2 .circle/x STZ2
 		.circle/xc LDZ2 .circle/x LDZ2 ADD2  ( x center + x )
 		.Screen/x DEO2  ( write out x coordinate )
 		.circle/yc LDZ2 .circle/y LDZ2 ADD2 ( y center + y )
@@ -94,7 +100,7 @@ BRK
 		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
 		.color LDZ .Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
-	
+
 		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2  ( x center - x )
 		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
 		.color LDZ .Screen/pixel DEO
@@ -149,3 +155,29 @@ BRK
 		#0f AND DUP #09 GTH #27 MUL ADD [ LIT "0 ] ADD #18 DEO
 		JMP2r
 
+@prng-init ( -- )
+	[ LIT2 00 -DateTime/second ] DEI
+		[ LIT2 00 -DateTime/minute ] DEI #60 SFT2 EOR2
+		[ LIT2 00 -DateTime/hour ] DEI #c0 SFT2 EOR2 ,prng/x STR2
+	[ LIT2 00 -DateTime/hour ] DEI #04 SFT2
+		[ LIT2 00 -DateTime/day ] DEI #10 SFT2 EOR2
+		[ LIT2 00 -DateTime/month ] DEI #60 SFT2 EOR2
+		.DateTime/year DEI2 #a0 SFT2 EOR2 ,prng/y STR2
+JMP2r
+
+@prng ( -- number* )
+	[ LIT2 &x $2 ]
+		DUP2 #50 SFT2 EOR2
+		DUP2 #03 SFT2 EOR2
+	[ LIT2 &y $2 ] DUP2 ,&x STR2
+		DUP2 #01 SFT2 EOR2 EOR2
+		,&y STR2k POP
+JMP2r
+
+@print-str ( str* -- )
+
+	&while
+		LDAk #18 DEO
+		INC2 LDAk ,&while JCN
+	POP2
+JMP2r
