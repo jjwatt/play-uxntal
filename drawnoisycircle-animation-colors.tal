@@ -64,7 +64,6 @@ BRK
 	#03 ( color )
         ;draw-circle JSR2
 
-     ( circle in a circle. donut. )
     .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
     .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
 	WIDTH #06 SFT2 ( radius width / 16 )
@@ -120,11 +119,8 @@ BRK
 		.circle/yc LDZ2 .circle/y LDZ2 ADD2 ( y center + y )
 		.Screen/y DEO2
 		.color LDZ
-			;prng JSR2
-			#0004 MOD2
-			#0002 LTH2 ,&skip JCN
-			#0001 ADD2
-		 &skip
+		;changecolor JSR2
+
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 
@@ -135,12 +131,7 @@ BRK
 	
 		.circle/xc LDZ2 .circle/x LDZ2 ADD2 .Screen/x DEO2  ( x center + x )
 		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
-		.color LDZ
-			;prng JSR2
-			#0004 MOD2
-			#0002 LTH2 ,&skip2 JCN
-			#0001 ADD2
-		 &skip2
+		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 
@@ -148,11 +139,7 @@ BRK
 		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
 		.color LDZ
 		.color LDZ
-			;prng JSR2
-			#0004 MOD2
-			#0002 LTH2 ,&skip3 JCN
-			#0001 ADD2
-		 &skip3
+		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 	
@@ -164,36 +151,33 @@ BRK
 		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2 ( x center - x )
 		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2 ( y center + y )
 		.color LDZ
-			;prng JSR2
-			#0004 MOD2
-			#0002 LTH2 ,&skip4 JCN
-			#0001 ADD2
-		 &skip4
+		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 	
 		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2 ( x center + y )
 		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2 ( y center - x )
 		.color LDZ
-			;prng JSR2
-			#0004 MOD2
-			#0002 LTH2 ,&skip5 JCN
-			#0001 ADD2
-		 &skip5
+		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 	
 		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2 ( x center - y )
 		.circle/yc LDZ2 .circle/x LDZ2 SUB2 .Screen/y DEO2 ( y center - x )
 		.color LDZ
-			;prng JSR2
-			#0004 MOD2
-			#0002 LTH2 ,&skip6 JCN
-			#0001 ADD2
-		 &skip6
+		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 	JMP2r
+
+
+@changecolor ( color -- newcolor)
+	;prng JSR2
+	#0004 MOD2
+	#0002 LTH2 ,&skip JCN
+	#0001 ADD2
+	&skip
+JMP2r
 
 @print-dec ( dec -- )
 	DUP #64 DIV print-num/try
