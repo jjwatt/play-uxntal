@@ -78,7 +78,6 @@ BRK
 	#02 ( color )
         ;draw-circle JSR2
 
-
 BRK
 
 @draw-circle ( xc yc r color -- )
@@ -130,13 +129,14 @@ BRK
 		.Screen/y DEO2
 		.color LDZ
 		;changecolor JSR2
-
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 
 		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2  ( x center - x )
 		.circle/yc LDZ2 .circle/y LDZ2 ADD2 .Screen/y DEO2  ( y center + y )
-		.color LDZ .Screen/pixel DEO
+		.color LDZ
+		;changecolor JSR2
+		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 	
 		.circle/xc LDZ2 .circle/x LDZ2 ADD2 .Screen/x DEO2  ( x center + x )
