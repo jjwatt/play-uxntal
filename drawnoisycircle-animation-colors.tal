@@ -4,6 +4,13 @@
 %WIDTH { #0100 } %HEIGHT { #00a0 }
 %MOD { DUP2 DIV MUL SUB } ( a b -- a%b )
 %MOD2 { OVR2 OVR2 DIV2 MUL2 SUB2 } ( a b -- a%b )
+%HALF2 { #01 SFT2 } ( short -- short/2 )
+%HALF { #01 SFT } ( byte -- byte/2 )
+%QUARTER { #02 SFT } ( byte -- byte/4 )
+%EIGHTH { #03 SFT } ( byte -- byte/8 )
+%DEC2 { #0001 SUB2 }
+%8MOD { #07 AND } ( byte -- byte%8 )
+%TO-SHORT { #00 SWP } ( byte -- short )
 
 ( devices )
 
@@ -33,7 +40,8 @@
     	#0000 .numpoints STZ2
 	#00 .framecount STZ
 
-	;on-frame .Screen/vector DEO2
+	;prng-init JSR2 ( initialize pseudo-random number generator )
+	;on-frame .Screen/vector DEO2 ( setup display vector )
 
 
     ( .numpoints LDZ2 ;pdec JSR2 )
@@ -41,9 +49,9 @@
 BRK	
 
 @on-frame ( --> )
-	.framecount LDZ INC .framecount STZ
 
-     ;prng-init JSR2
+     .framecount LDZ INC .framecount STZ
+
      ( circle )
     .Screen/width DEI2 #01 SFT2 ( xc width / 2 )
     .Screen/height DEI2 #01 SFT2 ( yc height / 2 )
@@ -69,6 +77,8 @@ BRK
 	WIDTH #06 SFT2 ( radius width / 16 )
 	#02 ( color )
         ;draw-circle JSR2
+
+
 BRK
 
 @draw-circle ( xc yc r color -- )
@@ -131,6 +141,7 @@ BRK
 	
 		.circle/xc LDZ2 .circle/x LDZ2 ADD2 .Screen/x DEO2  ( x center + x )
 		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
+		.color LDZ
 		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
@@ -138,14 +149,15 @@ BRK
 		.circle/xc LDZ2 .circle/x LDZ2 SUB2 .Screen/x DEO2  ( x center - x )
 		.circle/yc LDZ2 .circle/y LDZ2 SUB2 .Screen/y DEO2  ( y center - y )
 		.color LDZ
-		.color LDZ
 		;changecolor JSR2
 		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 	
 		.circle/xc LDZ2 .circle/y LDZ2 ADD2 .Screen/x DEO2 ( x center + x )
 		.circle/yc LDZ2 .circle/x LDZ2 ADD2 .Screen/y DEO2 ( y center + y )
-		.color LDZ .Screen/pixel DEO
+		.color LDZ
+		;changecolor JSR2
+		.Screen/pixel DEO
 		.numpoints LDZ2 INC2 .numpoints STZ2 ( incr numpoints )
 
 		.circle/xc LDZ2 .circle/y LDZ2 SUB2 .Screen/x DEO2 ( x center - x )
