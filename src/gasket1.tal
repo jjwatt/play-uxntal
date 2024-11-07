@@ -38,7 +38,7 @@
 	( default seems to be 512x320 )
 
 	( set initial x,y coords )
-	#0008 .pixel/x STZ2
+	X-CENTER .pixel/x STZ2
 	Y-CENTER .pixel/y STZ2
 
 	( first triangle )
@@ -62,22 +62,35 @@
 	( pblank )
 	( set screen vector )
 	prng-init
-	draw-points
-	draw-points
-	draw-points
 	;on-frame .Screen/vector DEO2
 BRK
 @draw-points ( -- )
 	prng #0003 MOD2 #0002 MUL2 .rand STZ2
-	.rand LDZ2 .triangle ADD LDZ2 #0002 DIV2 .pixel/x STZ2
-	.rand LDZ2 .triangle ADD #02 ADD LDZ2 #0002 DIV2 .pixel/y STZ2
+	.pixel/x LDZ2
+		.rand LDZ2 .triangle ADD LDZ2 SUB2 #10 SFT2
+		DUP2 .pixel/x STZ2
+		.Screen/x DEO2
+	.pixel/y LDZ2
+		.rand LDZ2 .triangle ADD #02 ADD LDZ2 SUB2 #10 SFT2
+		DUP2 .pixel/y STZ2
+		.Screen/y DEO2
+	#01 .Screen/pixel DEO
+	.pixel/x LDZ2 print pblank .pixel/y LDZ2 print pblank
+	( it is randomly drawing one of the three but i think it's still the same 3 )
+	( need to change the x,y to be the new points )
+	(-probably need a recursive loop )
+	( 1. choose starting x, y initialp )
+	( 2. randomly select a vertex )
+	( 3. move halfway between initialp and vertex )
+	( 4. plot that point )
+	( 5. make that point initialp i think )
 JMP2r
 @on-frame ( -> )
 	( load x,y coords from zero page and send to screen device )
-	.pixel/x LDZ2 .Screen/x DEO2
-	.pixel/y LDZ2 .Screen/y DEO2
-	#01 .Screen/pixel DEO
 	draw-points
+	( .pixel/x LDZ2 .Screen/x DEO2 )
+	( .pixel/y LDZ2 .Screen/y DEO2 )
+	( #01 .Screen/pixel DEO )
 
 	( .triangle/x1 LDZ2 .Screen/x DEO2 )
 	( .triangle/y1 LDZ2 .Screen/y DEO2 )
