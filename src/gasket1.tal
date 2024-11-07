@@ -1,0 +1,146 @@
+%ABS2 { DUP2 #0f SFT2 EQU #05 JCN #0000 SWP2 SUB2 }
+%LTS2  { #8000 ADD2 SWP2 #8000 ADD2 GTH2 }
+%GTS2  { #8000 ADD2 SWP2 #8000 ADD2 LTH2 }
+%WIDTH { #0100 } %HEIGHT { #00a0 }
+%MOD { DUP2 DIV MUL SUB } ( a b -- a%b )
+%MOD2 { OVR2 OVR2 DIV2 MUL2 SUB2 } ( a b -- a%b )
+%HALF { #01 SFT } ( number -- number/2 )
+%HALF2 { #01 SFT2 } (number -- number/2 )
+%X-CENTER { .Screen/width DEI2 HALF2 } ( -- width )
+%Y-CENTER { .Screen/height DEI2 HALF2 } ( -- height )
+( devices )
+
+|00 @System [ &vector $2 &pad $6 &r $2 &g $2 &b $2 ]
+|20 @Screen [ &vector $2 &width $2 &height $2 &pad $2 &x $2 &y $2
+	      &addr $2 &pixel $1 &sprite $1 ]
+|10 @Console [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
+
+( Variables in zero-page )
+|00
+@color [ &byte $1 ]
+@triangle [ &x1 $2 &y1 $2 &x2 $2 &y2 $2 &x3 $2 &y3 $2 ]
+@initialp [ &x $2 &y $2 ]
+@pixel [ &x $2 &y $2 ]
+@numpoints [ $2 ]
+	
+( init )
+|0100
+
+	( set system colors )
+	( #2ce9 .System/r DEO2 )
+	( #01c0 .System/g DEO2 )
+	( #2ce5 .System/b DEO2 )
+
+	( #0280 .Screen/width DEO2 )
+	( #01e0 .Screen/height DEO2 )
+	( default seems to be 512x320 )
+
+	( set initial x,y coords )
+	#0008 .pixel/x STZ2
+	Y-CENTER .pixel/y STZ2
+
+	( first triangle )
+	#0000 .triangle/x1 STZ2
+	#0000 .triangle/y1 STZ2
+	.Screen/width DEI2
+		#01 SFT2 .triangle/x2 STZ2
+	.Screen/height DEI2 .triangle/y2 STZ2
+	.Screen/width DEI2 .triangle/x3 STZ2
+	#0000 .triangle/y3 STZ2
+
+	( .triangle/y2 LDZ2 pdec )
+	( ;pblank JSR2 )
+	( .triangle/x1 #01 ADD <phex> )
+	( ;pblank JSR2 )
+	( .triangle <phex> )
+	( ;pblank JSR2 )
+	.triangle/y2 LDZ2 <phex>
+	pblank
+	.triangle #04 ADD <phex>
+	pblank
+	.pixel/x LDZ2 <phex>
+	pblank
+	( set screen vector )
+	( ;on-frame .Screen/vector DEO2 )
+BRK
+
+@on-frame ( -> )
+	( load x,y coords from zero page and send to screen device )
+	.pixel/x LDZ2 .Screen/x DEO2
+	.pixel/y LDZ2 .Screen/y DEO2
+	
+	#01 .Screen/pixel DEO
+
+	.triangle/x1 LDZ2 .Screen/x DEO2
+	.triangle/y1 LDZ2 .Screen/y DEO2
+	#01 .Screen/pixel DEO
+
+	.triangle/x2 LDZ2 .Screen/x DEO2
+	.triangle/y2 LDZ2 .Screen/y DEO2
+	#01 .Screen/pixel DEO
+
+	.triangle/x3 LDZ2 .Screen/x DEO2
+	.triangle/y3 LDZ2 .Screen/y DEO2
+	#01 .Screen/pixel DEO
+	( increment pixel/x )
+	( .pixel/x LDZ2 INC2 .pixel/x STZ2 )
+BRK
+
+@pblank ( -- )
+	{ 0a 00 }
+	STH2r
+	&wa ( -- )
+		LDAk .Console/write DEO
+		INC2 LDAk ?&wa
+	POP2
+JMP2r
+
+@print-dec ( dec -- )
+	DUP #64 DIV print-num/try
+	DUP #0a DIV print-num/try
+	( >> )
+
+@print-num ( num -- )
+	#0a DIVk MUL SUB [ LIT "0 ] ADD #18 DEO
+	JMP2r
+	&try ( num -- )
+		DUP ?print-num
+		POP JMP2r
+@pdec ( short* -- )
+	#2710 [ LIT2r 00fb ]
+	&w ( -- )
+		DIV2k #000a DIV2k MUL2 SUB2 SWPr EQUk OVR STHkr EQU AND ?{
+			DUP [ LIT "0 ] ADD #19 DEO
+			INCr }
+		POP2 #000a DIV2 SWPr INCr STHkr ?&w
+	POP2r POP2 POP2 JMP2r
+
+@<phex> ( short* -: )
+	SWP /b
+	&b ( byte -: )
+		DUP #04 SFT /c
+	&c ( byte -: )
+		#0f AND DUP #09 GTH #27 MUL ADD [ LIT "0 ] ADD #18 DEO
+		JMP2r
+
+@pstr-inline-loop
+
+	[ LITr 18 ] DEOr INC2r
+
+@pstr-inline ( -- | retaddr -- )
+	LDAkr DUPr [ LITr _pstr-inline-loop ] JCNr
+	POPr INC2r
+JMP2r
+
+@print ( short* -- )
+	SWP ,&byte JSR
+	&byte ( byte -- ) DUP #04 SFT ,&char JSR
+	&char ( char -- ) #0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
+JMP2r
+
+@print-str ( str* -- )
+	&while
+		LDAk #18 DEO
+		INC2 LDAk ,&while JCN
+	POP2
+JMP2r
