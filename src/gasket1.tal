@@ -23,7 +23,8 @@
 @triangle [ &x1 $2 &x2 $2 &x3 $2 &y1 $2 &y2 $2 &y3 $2 ]
 @initialp [ &x $2 &y $2 ]
 @pixel [ &x $2 &y $2 ]
-	
+@rand $2
+
 ( init )
 |0100
 
@@ -60,16 +61,17 @@
 	( .triangle #04 ADD LDZ2 <phex> ( 2 bytes ) )
 	( pblank )
 	( set screen vector )
+	prng-init
 	draw-points
 	;on-frame .Screen/vector DEO2
 BRK
 @draw-points ( -- )
 	( STH ,&color STR2 )
 	( &loop )
-	prng-init
-	prng #0003 MOD2 #0002 MUL2 ,&rand STR2
-	[ LIT2 &rand $2 ] SWP .triangle ADD2 <phex>
-	pblank
+	prng #0003 MOD2 #0002 MUL2 .rand STZ2
+	.rand LDZ2 <phex> pblank
+	( [ LIT2 &rand $2 ] SWP .triangle ADD2 LDZ2 #0002 DIV .pixel/x STZ2 )
+	( ,&rand LDR2 SWP .triangle #0002 ADD2 LDZ2 #0002 DIV .pixel/y STZ2 )
 JMP2r
 @on-frame ( -> )
 	( load x,y coords from zero page and send to screen device )
@@ -90,7 +92,7 @@ JMP2r
 	.triangle/y3 LDZ2 .Screen/y DEO2
 	#01 .Screen/pixel DEO
 	( increment pixel/x )
-	
+	draw-points
 	( .pixel/x LDZ2 INC2 .pixel/x STZ2 )
 BRK
 
