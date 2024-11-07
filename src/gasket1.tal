@@ -16,7 +16,7 @@
 %HALF2 { #01 SFT2 } (number -- number/2 )
 %X-CENTER { .Screen/width DEI2 HALF2 } ( -- width )
 %Y-CENTER { .Screen/height DEI2 HALF2 } ( -- height )
-
+%BREAKPOINT { #010e DEO }
 ( Variables in zero-page )
 |00
 @color [ &byte $1 ]
@@ -29,9 +29,9 @@
 |0100
 
 	( set system colors )
-	#2ce9 .System/r DEO2
-	#01c0 .System/g DEO2
-	#2ce5 .System/b DEO2
+	( #2ce9 .System/r DEO2 )
+	( #01c0 .System/g DEO2 )
+	( #2ce5 .System/b DEO2 )
 
 	( #0280 .Screen/width DEO2 )
 	( #01e0 .Screen/height DEO2 )
@@ -61,21 +61,30 @@
 	( .triangle #04 ADD LDZ2 <phex> ( 2 bytes ) )
 	( pblank )
 	( set screen vector )
-	prng-init
-	;on-frame .Screen/vector DEO2
+	
+	( ;on-frame .Screen/vector DEO2 )
+	( pause exec debug port )
+	draw-points
 BRK
 @draw-points ( -- )
-	prng #0003 MOD2 #0002 MUL2 .rand STZ2
-	.pixel/x LDZ2
-		.rand LDZ2 .triangle ADD LDZ2 SUB2 #10 SFT2
-		DUP2 .pixel/x STZ2
-		.Screen/x DEO2
-	.pixel/y LDZ2
-		.rand LDZ2 .triangle ADD #02 ADD LDZ2 SUB2 #10 SFT2
-		DUP2 .pixel/y STZ2
-		.Screen/y DEO2
-	#01 .Screen/pixel DEO
-	.pixel/x LDZ2 print pblank .pixel/y LDZ2 print pblank
+	prng-init
+	prng .rand STZ2
+	.rand LDZ2k
+	BREAKPOINT
+	print pblank
+	( .pixel/x LDZ2 .triangle .rand LDZ2 ADD LDZ2 print pblank )
+	( .pixel/y LDZ2 .triangle .rand LDZ2 ADD LDZ2 .pixel/y STZ2 )
+	( .pixel/x LDZ2 )
+	( 	.rand LDZ2 .triangle ADD LDZ2 .pixel/x STZ2 )
+	( .pixel/y LDZ2 )
+	( 	.rand LDZ2 .triangle ADD #02 ADD LDZ2 .pixel/y STZ2 )
+
+	( .pixel/x LDZ2 print pblank )
+	( .pixel/y LDZ2 print pblank )
+
+	( .pixel/x LDZ2 .Screen/x DEO2 )
+	( .pixel/y LDZ2 .Screen/y DEO2 )
+	( #01 .Screen/pixel )
 	( it is randomly drawing one of the three but i think it's still the same 3 )
 	( need to change the x,y to be the new points )
 	(-probably need a recursive loop )
@@ -87,7 +96,7 @@ BRK
 JMP2r
 @on-frame ( -> )
 	( load x,y coords from zero page and send to screen device )
-	draw-points
+	( draw-points )
 	( .pixel/x LDZ2 .Screen/x DEO2 )
 	( .pixel/y LDZ2 .Screen/y DEO2 )
 	( #01 .Screen/pixel DEO )
