@@ -69,7 +69,8 @@ BRK
 	( STH ,&color STR2 )
 	( &loop )
 	prng #0003 MOD2 #0002 MUL2 .rand STZ2
-	.rand LDZ2 <phex> pblank
+	( todo: convert to short )
+	.rand LDZ2 .triangle ADD LDZ2 print
 	( [ LIT2 &rand $2 ] SWP .triangle ADD2 LDZ2 #0002 DIV .pixel/x STZ2 )
 	( ,&rand LDR2 SWP .triangle #0002 ADD2 LDZ2 #0002 DIV .pixel/y STZ2 )
 JMP2r
@@ -92,7 +93,6 @@ JMP2r
 	.triangle/y3 LDZ2 .Screen/y DEO2
 	#01 .Screen/pixel DEO
 	( increment pixel/x )
-	draw-points
 	( .pixel/x LDZ2 INC2 .pixel/x STZ2 )
 BRK
 
