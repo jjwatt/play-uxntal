@@ -63,35 +63,33 @@
 	( set screen vector )
 	prng-init
 	draw-points
+	draw-points
+	draw-points
 	;on-frame .Screen/vector DEO2
 BRK
 @draw-points ( -- )
-	( STH ,&color STR2 )
-	( &loop )
 	prng #0003 MOD2 #0002 MUL2 .rand STZ2
-	( todo: convert to short )
-	.rand LDZ2 .triangle ADD LDZ2 print
-	( [ LIT2 &rand $2 ] SWP .triangle ADD2 LDZ2 #0002 DIV .pixel/x STZ2 )
-	( ,&rand LDR2 SWP .triangle #0002 ADD2 LDZ2 #0002 DIV .pixel/y STZ2 )
+	.rand LDZ2 .triangle ADD LDZ2 #0002 DIV2 .pixel/x STZ2
+	.rand LDZ2 .triangle ADD #02 ADD LDZ2 #0002 DIV2 .pixel/y STZ2
 JMP2r
 @on-frame ( -> )
 	( load x,y coords from zero page and send to screen device )
 	.pixel/x LDZ2 .Screen/x DEO2
 	.pixel/y LDZ2 .Screen/y DEO2
-	
 	#01 .Screen/pixel DEO
+	draw-points
 
-	.triangle/x1 LDZ2 .Screen/x DEO2
-	.triangle/y1 LDZ2 .Screen/y DEO2
-	#01 .Screen/pixel DEO
+	( .triangle/x1 LDZ2 .Screen/x DEO2 )
+	( .triangle/y1 LDZ2 .Screen/y DEO2 )
+	( #01 .Screen/pixel DEO )
 
-	.triangle/x2 LDZ2 .Screen/x DEO2
-	.triangle/y2 LDZ2 .Screen/y DEO2
-	#01 .Screen/pixel DEO
+	( .triangle/x2 LDZ2 .Screen/x DEO2 )
+	( .triangle/y2 LDZ2 .Screen/y DEO2 )
+	( #01 .Screen/pixel DEO )
 
-	.triangle/x3 LDZ2 .Screen/x DEO2
-	.triangle/y3 LDZ2 .Screen/y DEO2
-	#01 .Screen/pixel DEO
+	( .triangle/x3 LDZ2 .Screen/x DEO2 )
+	( .triangle/y3 LDZ2 .Screen/y DEO2 )
+	( #01 .Screen/pixel DEO )
 	( increment pixel/x )
 	( .pixel/x LDZ2 INC2 .pixel/x STZ2 )
 BRK
