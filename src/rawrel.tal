@@ -13,6 +13,5 @@ BRK
 
 	LDAkr DUPr [ LITr _pstr-inline-loop ] JCNr
 	POPr INC2r
-
 JMP2r
 

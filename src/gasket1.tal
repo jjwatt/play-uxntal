@@ -1,3 +1,11 @@
+( devices )
+|00 @System [ &vector $2 &pad $6 &r $2 &g $2 &b $2 ]
+|20 @Screen [ &vector $2 &width $2 &height $2 &pad $2 &x $2 &y $2
+	      &addr $2 &pixel $1 &sprite $1 ]
+|10 @Console [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
+|c0 @DateTime   &year   $2 &month    $1 &day    $1 &hour   $1 &minute $1 &second  $1 &dotw    $1 &doty   $2 &isdst $1
+
+( macros )
 %ABS2 { DUP2 #0f SFT2 EQU #05 JCN #0000 SWP2 SUB2 }
 %LTS2  { #8000 ADD2 SWP2 #8000 ADD2 GTH2 }
 %GTS2  { #8000 ADD2 SWP2 #8000 ADD2 LTH2 }
@@ -8,28 +16,21 @@
 %HALF2 { #01 SFT2 } (number -- number/2 )
 %X-CENTER { .Screen/width DEI2 HALF2 } ( -- width )
 %Y-CENTER { .Screen/height DEI2 HALF2 } ( -- height )
-( devices )
-
-|00 @System [ &vector $2 &pad $6 &r $2 &g $2 &b $2 ]
-|20 @Screen [ &vector $2 &width $2 &height $2 &pad $2 &x $2 &y $2
-	      &addr $2 &pixel $1 &sprite $1 ]
-|10 @Console [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
 
 ( Variables in zero-page )
 |00
 @color [ &byte $1 ]
-@triangle [ &x1 $2 &y1 $2 &x2 $2 &y2 $2 &x3 $2 &y3 $2 ]
+@triangle [ &x1 $2 &x2 $2 &x3 $2 &y1 $2 &y2 $2 &y3 $2 ]
 @initialp [ &x $2 &y $2 ]
 @pixel [ &x $2 &y $2 ]
-@numpoints [ $2 ]
 	
 ( init )
 |0100
 
 	( set system colors )
-	( #2ce9 .System/r DEO2 )
-	( #01c0 .System/g DEO2 )
-	( #2ce5 .System/b DEO2 )
+	#2ce9 .System/r DEO2
+	#01c0 .System/g DEO2
+	#2ce5 .System/b DEO2
 
 	( #0280 .Screen/width DEO2 )
 	( #01e0 .Screen/height DEO2 )
@@ -54,16 +55,22 @@
 	( ;pblank JSR2 )
 	( .triangle <phex> )
 	( ;pblank JSR2 )
-	.triangle/y2 LDZ2 <phex>
-	pblank
-	.triangle #04 ADD <phex>
-	pblank
-	.pixel/x LDZ2 <phex>
-	pblank
+	( .triangle/x2 LDZ2 <phex> )
+	( pblank )
+	( .triangle #04 ADD LDZ2 <phex> ( 2 bytes ) )
+	( pblank )
 	( set screen vector )
-	( ;on-frame .Screen/vector DEO2 )
+	draw-points
+	;on-frame .Screen/vector DEO2
 BRK
-
+@draw-points ( -- )
+	( STH ,&color STR2 )
+	( &loop )
+	prng-init
+	prng #0003 MOD2 #0002 MUL2 ,&rand STR2
+	[ LIT2 &rand $2 ] SWP .triangle ADD2 <phex>
+	pblank
+JMP2r
 @on-frame ( -> )
 	( load x,y coords from zero page and send to screen device )
 	.pixel/x LDZ2 .Screen/x DEO2
@@ -83,6 +90,7 @@ BRK
 	.triangle/y3 LDZ2 .Screen/y DEO2
 	#01 .Screen/pixel DEO
 	( increment pixel/x )
+	
 	( .pixel/x LDZ2 INC2 .pixel/x STZ2 )
 BRK
 
@@ -143,4 +151,23 @@ JMP2r
 		LDAk #18 DEO
 		INC2 LDAk ,&while JCN
 	POP2
+JMP2r
+
+@prng-init ( -- )
+	[ LIT2 00 -DateTime/second ] DEI
+		[ LIT2 00 -DateTime/minute ] DEI #60 SFT2 EOR2
+		[ LIT2 00 -DateTime/hour ] DEI #c0 SFT2 EOR2 ,prng/x STR2
+	[ LIT2 00 -DateTime/hour ] DEI #04 SFT2
+		[ LIT2 00 -DateTime/day ] DEI #10 SFT2 EOR2
+		[ LIT2 00 -DateTime/month ] DEI #60 SFT2 EOR2
+		.DateTime/year DEI2 #a0 SFT2 EOR2 ,prng/y STR2
+JMP2r
+
+@prng ( -- number* )
+	[ LIT2 &x $2 ]
+		DUP2 #50 SFT2 EOR2
+		DUP2 #03 SFT2 EOR2
+	[ LIT2 &y $2 ] DUP2 ,&x STR2
+		DUP2 #01 SFT2 EOR2 EOR2
+		,&y STR2k POP
 JMP2r
