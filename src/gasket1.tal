@@ -20,8 +20,10 @@
 ( Variables in zero-page )
 |00
 @color [ &byte $1 ]
-@triangle [ &x1 $2 &x2 $2 &x3 $2 &y1 $2 &y2 $2 &y3 $2 ]
-@initialp [ &x $2 &y $2 ]
+( @triangle [ &x1 $2 &x2 $2 &x3 $2 &y1 $2 &y2 $2 &y3 $2 ] )
+@trianglex [ &x1 $2 &x2 $2 &x3 $2 ]
+@triangley [ &y1 $2 &y2 $2 &y3 $3 ]
+
 @pixel [ &x $2 &y $2 ]
 @rand $2
 
@@ -42,13 +44,13 @@
 	Y-CENTER .pixel/y STZ2
 
 	( first triangle )
-	#0000 .triangle/x1 STZ2
-	#0000 .triangle/y1 STZ2
+	#0000 .trianglex/x1 STZ2
+	#0000 .triangley/y1 STZ2
 	.Screen/width DEI2
-		#01 SFT2 .triangle/x2 STZ2
-	.Screen/height DEI2 .triangle/y2 STZ2
-	.Screen/width DEI2 .triangle/x3 STZ2
-	#0000 .triangle/y3 STZ2
+		#01 SFT2 .trianglex/x2 STZ2
+	.Screen/height DEI2 .triangley/y2 STZ2
+	.Screen/width DEI2 .trianglex/x3 STZ2
+	#0000 .triangley/y3 STZ2
 	( .triangle/y2 LDZ2 pdec )
 	( ;pblank JSR2 )
 	( .triangle/x1 #01 ADD <phex> )
@@ -72,11 +74,12 @@ BRK
 	#01 .Screen/pixel DEO
 
 	prng .rand STZ POP
-	.rand LDZ #08 MOD
-	.triangle ADD LDZ2 .pixel/x LDZ2 ADD2 #01 SFT2
+	.rand LDZ #03 MOD #02 MUL
+	.trianglex ADD LDZ2 .pixel/x LDZ2 ADD2 #01 SFT2
 	( BREAKPOINT )
 	.pixel/x STZ2
-	.rand LDZ #08 MOD .triangle ADD #10 SFT LDZ2 .pixel/y LDZ2 ADD2 #01 SFT2
+	.rand LDZ #03 MOD #02 MUL
+	.triangley ADD LDZ2 .pixel/y LDZ2 ADD2 #01 SFT2
 	( BREAKPOINT )
 	.pixel/y STZ2
 
