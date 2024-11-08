@@ -29,7 +29,6 @@
 
 ( init )
 |0100
-
 	( set system colors )
 	#2ce9 .System/r DEO2
 	#01c0 .System/g DEO2
@@ -67,8 +66,6 @@ BRK
 	( 3. move halfway between initialp and vertex )
 	( 4. plot that point )
 	( 5. make that point initialp i think )
-	#00 .counter STZ
-	&loop
 	prng .rand STZ POP
 	.rand LDZ #03 MOD #02 MUL
 	.trianglex ADD LDZ2 .Screen/x DEI2 ADD2 #01 SFT2
@@ -76,8 +73,7 @@ BRK
 	.rand LDZ #03 MOD #02 MUL
 	.triangley ADD LDZ2 .Screen/y DEI2 ADD2 #01 SFT2
 	.Screen/y DEO2
-	#01 .Screen/pixel DEO
-	.counter LDZ INC #fe GTH2 ,&loop
+	#02 .Screen/pixel DEO
 JMP2r
 @on-frame ( -> )
 	draw-points
