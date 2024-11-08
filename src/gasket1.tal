@@ -61,53 +61,30 @@
 	( pblank )
 	( .triangle #04 ADD LDZ2 <phex> ( 2 bytes ) )
 	( pblank )
-	( set screen vector )
 
-	;on-frame .Screen/vector DEO2
-	( pause exec debug port )
+	( init random number generator )
 	prng-init
-	draw-points
-BRK
-@draw-points ( -- )
+	( draw first points )
 	.pixel/x LDZ2 .Screen/x DEO2
 	.pixel/y LDZ2 .Screen/y DEO2
 	#01 .Screen/pixel DEO
-
-	prng .rand STZ POP
-	.rand LDZ #03 MOD #02 MUL
-	.trianglex ADD LDZ2 .pixel/x LDZ2 ADD2 #01 SFT2
-	( BREAKPOINT )
-	.pixel/x STZ2
-	.rand LDZ #03 MOD #02 MUL
-	.triangley ADD LDZ2 .pixel/y LDZ2 ADD2 #01 SFT2
-	( BREAKPOINT )
-	.pixel/y STZ2
-
-	( .pixel/x LDZ2 .Screen/x DEO2 )
-	( .pixel/y LDZ2 .Screen/y DEO2 )
-	( #01 .Screen/pixel DEO )
-
-	( .pixel/x LDZ2 .triangle .rand LDZ2 ADD LDZ2 print pblank )
-	( .pixel/y LDZ2 .triangle .rand LDZ2 ADD LDZ2 .pixel/y STZ2 )
-	( .pixel/x LDZ2 )
-	( 	.rand LDZ2 .triangle ADD LDZ2 .pixel/x STZ2 )
-	( .pixel/y LDZ2 )
-	( 	.rand LDZ2 .triangle ADD #02 ADD LDZ2 .pixel/y STZ2 )
-
-	( .pixel/x LDZ2 print pblank )
-	( .pixel/y LDZ2 print pblank )
-
-	( .pixel/x LDZ2 .Screen/x DEO2 )
-	( .pixel/y LDZ2 .Screen/y DEO2 )
-	( #01 .Screen/pixel )
-	( it is randomly drawing one of the three but i think it's still the same 3 )
-	( need to change the x,y to be the new points )
-	(-probably need a recursive loop )
+	;on-frame .Screen/vector DEO2
+	( pause exec debug port )
+BRK
+@draw-points ( -- )
 	( 1. choose starting x, y initialp )
 	( 2. randomly select a vertex )
 	( 3. move halfway between initialp and vertex )
 	( 4. plot that point )
 	( 5. make that point initialp i think )
+	prng .rand STZ POP
+	.rand LDZ #03 MOD #02 MUL
+	.trianglex ADD LDZ2 .Screen/x DEI2 ADD2 #01 SFT2
+	.Screen/x DEO2
+	.rand LDZ #03 MOD #02 MUL
+	.triangley ADD LDZ2 .Screen/y DEI2 ADD2 #01 SFT2
+	.Screen/y DEO2
+	#01 .Screen/pixel DEO
 JMP2r
 @on-frame ( -> )
 	draw-points
