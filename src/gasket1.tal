@@ -60,29 +60,29 @@
 	( .triangle #04 ADD LDZ2 <phex> ( 2 bytes ) )
 	( pblank )
 	( set screen vector )
-	
+
 	;on-frame .Screen/vector DEO2
 	( pause exec debug port )
+	prng-init
 	draw-points
 BRK
 @draw-points ( -- )
 	.pixel/x LDZ2 .Screen/x DEO2
 	.pixel/y LDZ2 .Screen/y DEO2
-	#01 .Screen/pixel DEO2
+	#01 .Screen/pixel DEO
 
-	prng-init
 	prng .rand STZ POP
-	.rand LDZ #05 MOD
+	.rand LDZ #08 MOD
 	.triangle ADD LDZ2 .pixel/x LDZ2 ADD2 #01 SFT2
 	( BREAKPOINT )
 	.pixel/x STZ2
-	.rand LDZ #04 MOD .triangle ADD #10 SFT LDZ2 .pixel/y LDZ2 ADD2 #01 SFT2
+	.rand LDZ #08 MOD .triangle ADD #10 SFT LDZ2 .pixel/y LDZ2 ADD2 #01 SFT2
 	( BREAKPOINT )
 	.pixel/y STZ2
 
 	.pixel/x LDZ2 .Screen/x DEO2
 	.pixel/y LDZ2 .Screen/y DEO2
-	#01 .Screen/pixel DEO2
+	#01 .Screen/pixel DEO
 
 	( .pixel/x LDZ2 .triangle .rand LDZ2 ADD LDZ2 print pblank )
 	( .pixel/y LDZ2 .triangle .rand LDZ2 ADD LDZ2 .pixel/y STZ2 )
