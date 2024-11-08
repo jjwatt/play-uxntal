@@ -67,7 +67,7 @@ BRK
 	( 3. move halfway between initialp and vertex )
 	( 4. plot that point )
 	( 5. make that point initialp i think )
-	#00 .counter STZ
+	#0000 .counter STZ2
 	&loop
 	prng .rand STZ POP
 	.rand LDZ #03 MOD #02 MUL
@@ -77,7 +77,7 @@ BRK
 	.triangley ADD LDZ2 .Screen/y DEI2 ADD2 #01 SFT2
 	.Screen/y DEO2
 	#01 .Screen/pixel DEO
-	.counter LDZ INC #fe GTH ,&loop
+	.counter LDZ2 INC2 #fff0 GTH2 ,&loop
 JMP2r
 @on-frame ( -> )
 	draw-points
