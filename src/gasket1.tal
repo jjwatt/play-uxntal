@@ -77,7 +77,7 @@ BRK
 	.triangley ADD LDZ2 .Screen/y DEI2 ADD2 #01 SFT2
 	.Screen/y DEO2
 	#01 .Screen/pixel DEO
-	.counter LDZ2 INC2 #fff0 GTH2 ,&loop
+	.counter LDZ2 INC2 #1388 GTH2 ,&loop
 JMP2r
 @on-frame ( -> )
 	draw-points
