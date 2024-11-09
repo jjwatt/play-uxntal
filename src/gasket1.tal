@@ -44,12 +44,12 @@
 
 	( first triangle )
 	#0000 .trianglex/x1 STZ2
-	#0000 .triangley/y1 STZ2
+	.Screen/height DEI2 .triangley/y1 STZ2
 	.Screen/width DEI2
 		#01 SFT2 .trianglex/x2 STZ2
-	.Screen/height DEI2 .triangley/y2 STZ2
+	#0000 .triangley/y2 STZ2
 	.Screen/width DEI2 .trianglex/x3 STZ2
-	#0000 .triangley/y3 STZ2
+	.Screen/height DEI2 .triangley/y3 STZ2
 
 	( init random number generator )
 	prng-init
