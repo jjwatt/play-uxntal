@@ -41,21 +41,6 @@
 	( INC2 GTH2k ?&loop )
 	( .counter LDZ2 <phex> pblank )
 	( #0001 #0100 #0200 #0100 #01 line-slow )
-	#0001 #0100 #0200 #0100 #01 broken-line
-BRK
-
-@broken-line ( x1 y1 x2 y2 color -- )
-	.color STZ
-	,bline/y0 STR2
-	,bline/x0 STR2
-	,bline/y STR2
-	,bline/x STR2
-	,bline/x0 LDR2 <phex> pblank
-	,bline/y0 LDR2 <phex> pblank
-	,bline/x LDR2 <phex> pblank
-	,bline/y LDR2 <phex> pblank
-
-	( ,xstep #05 STR )
 	#0200 ( ,bline/x )
 	#0000 ( counter )
 	( for x=0 x < width; x+=1)
@@ -63,17 +48,10 @@ BRK
 		( change y by random y step )
 		( draw a line stepwise but change y with ystep )
 		( draw line from lastx, lasty to new x + xstep, y + ystep )
-		,bline/x0 LDR2 ADD2 #0005 ,bline/x0 STR2
-		,bline/y0 LDR2 ADD2 #0002 ,bline/y0 STR2 
-		,bline/x0 LDR2 ,bline/y0 LDR2 ,lastx LDR2 ,lasty LDR2 #01 line-slow
-		,bline/x LDR2 ,lastx STR2 ,bline/y LDR2 ,lastx STR2
 	INC2 GTH2k ?&loop
-JMP2r
-@bline [ &x0 $2 &y0 $2 &x $2 &y $2 ]
-@lastx [ $2 ]
-@lasty [ $2 ]
-@xstep [ $1 ]
-@ystep [ $1 ]
+
+BRK
+
 
 @line-slow ( x1 y1 x2 y2 color -- )
 	( load ) .color STZ
