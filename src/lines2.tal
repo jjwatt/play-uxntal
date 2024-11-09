@@ -41,7 +41,7 @@
 	( INC2 GTH2k ?&loop )
 	( .counter LDZ2 <phex> pblank )
 	( #0001 #0100 #0200 #0100 #01 line-slow )
-	#0200 ( ,bline/x )
+	#01f0 ( width - borderx )
 	#0000 ( counter )
 	( for x=0 x < width; x+=1)
 	&loop
