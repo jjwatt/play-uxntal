@@ -33,26 +33,11 @@
 	#0200
 	#0000
 	( for x=0 x < width; x+=xstep)
-	&loop
-		.counter LDZ2 INC2 .counter STZ2 
-	INC2 GTH2k ,&loop JCN
-	.counter LDZ2 <phex> pblank
-	( set system colors )
-	( #2ce9 .System/r DEO2 )
-	( #01c0 .System/g DEO2 )
-	( #2ce5 .System/b DEO2 )
-
-	( #0280 .Screen/width DEO2 )
-	( #01e0 .Screen/height DEO2 )
-	( default seems to be 512x320 )
-
-	( init random number generator )
-	( prng-init )
-
-	( #0001 #0001 #0010 #0010 #01 line-slow )
-	( #0010 #0010 #0080 #0080 #01 line-slow )
-	( ;on-frame .Screen/vector DEO2 )
-	( pause exec debug port )
+	( &loop )
+	( 	.counter LDZ2 INC2 .counter STZ2 )
+	( INC2 GTH2k ?&loop )
+	( .counter LDZ2 <phex> pblank )
+	#0001 #0100 #0200 #0100 #01 broken-line
 BRK
 
 @broken-line ( x1 y1 x2 y2 color -- )
@@ -61,11 +46,12 @@ BRK
 	,bline/x0 STR2
 	,bline/y STR2
 	,bline/x STR2
-	.Screen/width DEI2
-	#0000
-	( for x=0 x < width; x+=xstep)
+	#0200
+	#0000 ( counter )
+	( for x=0 x < width; x+=1)
 	&loop
-	INC2 GTH2 ,&loop JCN
+
+	INC2 GTH2k ?&loop
 JMP2r
 @bline [ &x0 $2 &y0 $2 &x $2 &y $2 ]
 
