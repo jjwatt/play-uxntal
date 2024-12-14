@@ -23,8 +23,6 @@
 |00
 @color [ &byte $1 ]
 @line [ &x0 $2 &y0 $2 &x $2 &y $2 &sx $2 &sy $2 &dx $2 &dy $2 &e1 $2 &e2 $2 ]
-@lastx $2
-@lasty $2
 @rand $2
 @counter [ $2 ]
 
@@ -103,8 +101,8 @@ JMP2r
 	&end
 JMP2r
 
-@on-frame ( -> )
-BRK
+( @on-frame ( -> ) )
+( BRK )
 
 @pblank ( -- )
 	{ 0a 00 }
