@@ -2,4 +2,4 @@
 # debug
 
 uxnasm "$1".tal "$1".rom &&
-    uxnemu beetbug.rom "$1".rom
+    uxnemu ../roms/beetbug.rom "$1".rom
