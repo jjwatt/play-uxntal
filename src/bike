@@ -1,4 +1,4 @@
 #!/bin/bash
 # bike
 
-uxnemu ~/uxn/roms/bicycle.rom
+uxnemu -2x ~/uxn/roms/bicycle.rom
