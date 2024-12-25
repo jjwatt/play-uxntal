@@ -34,10 +34,10 @@
 	#2ce5 .System/b DEO2
 
 	( for x=0 x < width; x+=xstep)
-	( &loop )
-	( 	.counter LDZ2 INC2 .counter STZ2 )
-	( INC2 GTH2k ?&loop )
-	( .counter LDZ2 <phex> pblank )
+	&loop
+		.counter LDZ2 INC2 .counter STZ2
+	INC2 GTH2k ?&loop
+	.counter LDZ2 <phex> pblank
 	( #0001 #0100 #0200 #0100 #01 line-slow )
 	#0001 #0100 #0200 #0100 #01 broken-line
 BRK
